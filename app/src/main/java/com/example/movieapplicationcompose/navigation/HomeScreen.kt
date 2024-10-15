@@ -39,6 +39,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,27 +69,28 @@ fun HomeScreen(navController: NavHostController) {
                     ),
                 content = {
                     items(state.movies.size) {
-//                        if (it >= state.movies.size - 1 && !state.endReached && !state.isLoading) {
-//                            movieViewModel.loadNextItems()
-//                        }
+                        if (it >= state.movies.size - 1 && !state.endReached && !state.isLoading) {
+                            movieViewModel.loadNextItems()
+                        }
+
                         ItemUi(
                             itemIndex = it, movieList = state.movies,
                             navController = navController
                         )
                     }
-//                    item(state.isLoading) {
-//                        Row(
-//                            Modifier
-//                                .fillMaxWidth()
-//                                .padding(8.dp),
-//                            horizontalArrangement = Arrangement.Center
-//                        ) {
-//                            CircularProgressIndicator(color = ProgressIndicatorDefaults.circularColor)
-//                        }
-//                        if (!state.error.isNullOrEmpty()){
-//                            Toast.makeText(LocalContext.current, state.error, Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
+                    item(state.isLoading) {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator(color = ProgressIndicatorDefaults.circularColor)
+                        }
+                        if (!state.error.isNullOrEmpty()){
+                            Toast.makeText(LocalContext.current, state.error, Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             )
         },

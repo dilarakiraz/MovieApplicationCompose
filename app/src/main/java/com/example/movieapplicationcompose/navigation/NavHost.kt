@@ -26,9 +26,10 @@ fun Navigation() {
                     type = NavType.IntType
                 }
             )
-        ) { id ->
-            id.arguments?.getInt("id")?.let { id1 ->
-                DetailsScreen(id = id1)
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("id")
+            id?.let {
+                DetailsScreen(navController = navController, id = it)
             }
         }
     }

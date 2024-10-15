@@ -16,10 +16,17 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,13 +42,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.movieapplicationcompose.R
 import com.example.movieapplicationcompose.models.Details
 import com.example.movieapplicationcompose.viewModel.MovieViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailsScreen(id: Int) {
+fun DetailsScreen(navController: NavHostController, id: Int) {
     val movieViewModel = viewModel<MovieViewModel>()
     movieViewModel.id = id
     movieViewModel.getDetailsById()
@@ -49,32 +58,53 @@ fun DetailsScreen(id: Int) {
 
     val details = state.detailsData
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        BackGroundPoster(details = details)
-        ForegroundPoster(details = details)
-        Column(
-            Modifier
-                .padding(start = 20.dp, end = 20.dp, bottom = 50.dp)
-                .align(Alignment.BottomCenter),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            Text(
-                text = details.title,
-                modifier = Modifier.fillMaxWidth(),
-                fontSize = 38.sp,
-                color = Color.White,
-                lineHeight = 40.sp,
-                textAlign = TextAlign.Center
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = details.title, color = Color.White) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.navigate("Home screen") {
+                            popUpTo("Home screen") { inclusive = true }
+                        }
+                    }) {
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = Color.Transparent
+                )
             )
-            Rating(details = details, modifier = Modifier)
-            TextBuilder(icon = Icons.Filled.Info, title = "Summery:", bodyText = details.plot)
-            TextBuilder(icon = Icons.Filled.Info, title = "Actors:", bodyText = details.actors)
-            ImageRow(details = details)
+        },
+        content = {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                BackGroundPoster(details = details)
+                ForegroundPoster(details = details)
+                Column(
+                    Modifier
+                        .padding(start = 20.dp, end = 20.dp, bottom = 50.dp)
+                        .align(Alignment.BottomCenter),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    Text(
+                        text = details.title,
+                        modifier = Modifier.fillMaxWidth(),
+                        fontSize = 38.sp,
+                        color = Color.White,
+                        lineHeight = 40.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Rating(details = details, modifier = Modifier)
+                    TextBuilder(icon = Icons.Filled.Info, title = "Summery:", bodyText = details.plot)
+                    TextBuilder(icon = Icons.Filled.Person, title = "Actors:", bodyText = details.actors)
+                    ImageRow(details = details)
+                }
+            }
         }
-    }
+    )
 }
 
 @Composable
