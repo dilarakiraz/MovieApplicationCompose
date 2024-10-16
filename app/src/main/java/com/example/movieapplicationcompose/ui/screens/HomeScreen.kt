@@ -1,10 +1,11 @@
-package com.example.movieapplicationcompose.navigation
+package com.example.movieapplicationcompose.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,6 +34,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,29 +50,43 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.example.movieapplicationcompose.models.Data
+import com.example.movieapplicationcompose.data.models.Data
 import com.example.movieapplicationcompose.viewModel.MovieViewModel
+
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
-    val movieViewModel = viewModel<MovieViewModel>()
+    val movieViewModel: MovieViewModel = hiltViewModel()
     val state = movieViewModel.state
+    var searchQuery by remember { mutableStateOf("") }
+
     Scaffold(
-        modifier = Modifier.background(Color.Transparent),
+        modifier = Modifier
+            .background(Color.Transparent),
         topBar = {
-            TopBar()
+            Column {
+                TopBar()
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = { newQuery ->
+                        searchQuery = newQuery
+                        movieViewModel.onSearchQueryChange(newQuery)
+                    },
+                    navController = navController
+                )
+            }
         }, content = { paddingValues ->
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 Modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .background(
-                        Color.Transparent
-                    ),
+                    .background(Color.Transparent),
                 content = {
                     items(state.movies.size) {
                         if (it >= state.movies.size - 1 && !state.endReached && !state.isLoading) {
@@ -74,7 +94,8 @@ fun HomeScreen(navController: NavHostController) {
                         }
 
                         ItemUi(
-                            itemIndex = it, movieList = state.movies,
+                            itemIndex = it,
+                            movieList = state.movies,
                             navController = navController
                         )
                     }
@@ -105,7 +126,10 @@ fun ItemUi(itemIndex: Int, movieList: List<Data>, navController: NavHostControll
         Modifier
             .wrapContentSize()
             .padding(10.dp)
-            .clickable {
+            .clickable (
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = true, color = Color.Yellow)
+            ){
                 navController.navigate("Details screen/${movieList[itemIndex].id}")
             },
         elevation = CardDefaults.cardElevation(8.dp)
@@ -117,7 +141,7 @@ fun ItemUi(itemIndex: Int, movieList: List<Data>, navController: NavHostControll
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
             Column(
                 modifier = Modifier
@@ -125,6 +149,7 @@ fun ItemUi(itemIndex: Int, movieList: List<Data>, navController: NavHostControll
                     .background(Color.LightGray.copy(.7f))
                     .padding(6.dp)
             ) {
+                //Film başlığı
                 Text(
                     text = movieList[itemIndex].title,
                     modifier = Modifier
@@ -141,8 +166,10 @@ fun ItemUi(itemIndex: Int, movieList: List<Data>, navController: NavHostControll
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+                // IMDb Puanı ve Yıldızlar
                 Row(Modifier.align(Alignment.End)) {
                     Icon(imageVector = Icons.Rounded.Star, contentDescription = "")
+
                     Text(
                         text = movieList[itemIndex].imdb_rating,
                         textAlign = TextAlign.Start,
@@ -154,6 +181,28 @@ fun ItemUi(itemIndex: Int, movieList: List<Data>, navController: NavHostControll
                         maxLines = 2
                     )
                 }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Türler (Genres)
+                Text(
+                    text = movieList[itemIndex].genres.joinToString(", "),
+                    color = Color.Black,
+                    fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Ülke ve Yıl
+                Text(
+                    text = "${movieList[itemIndex].country} - ${movieList[itemIndex].year}",
+                    color = Color.Black,
+                    fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

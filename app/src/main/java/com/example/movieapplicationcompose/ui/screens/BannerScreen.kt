@@ -1,4 +1,4 @@
-package com.example.movieapplicationcompose.navigation
+package com.example.movieapplicationcompose.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -31,20 +31,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.movieapplicationcompose.R
+import com.example.movieapplicationcompose.viewModel.MovieViewModel
 
 @Composable
 fun BannerScreen(navController: NavHostController) {
-    val modifier = Modifier
-    Box(modifier = modifier.fillMaxSize()) {
+
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.splash), contentDescription = "",
-            modifier.fillMaxSize(), contentScale = ContentScale.Crop
+            Modifier.fillMaxSize(), contentScale = ContentScale.Crop
         )
 
         Column(
-            modifier
+            Modifier
                 .wrapContentHeight()
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
@@ -56,7 +58,7 @@ fun BannerScreen(navController: NavHostController) {
             val offset = Offset(10.0f, 10f)
             Text(
                 text = "Enjoy the world of movies",
-                modifier.padding(vertical = 25.dp),
+                Modifier.padding(vertical = 25.dp),
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 style = TextStyle(
@@ -81,7 +83,7 @@ fun BannerScreen(navController: NavHostController) {
             )
             Button(
                 onClick = { navController.navigate("Home Screen") },
-                modifier
+                Modifier
                     .padding(bottom = 55.dp, start = 20.dp, end = 20.dp)
                     .fillMaxWidth()
                     .background(color = Color.Gray.copy(0.8f), RoundedCornerShape(16.dp))

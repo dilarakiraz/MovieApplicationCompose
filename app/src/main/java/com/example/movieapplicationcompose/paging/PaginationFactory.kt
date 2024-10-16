@@ -1,11 +1,11 @@
 package com.example.movieapplicationcompose.paging
 
-import retrofit2.Response
+import com.example.movieapplicationcompose.utils.Result
 
 class PaginationFactory<Key, Item> (
     private val initialPage: Key,
     private inline val onLoadUpdated:(Boolean)->Unit,
-    private inline val onRequest:suspend (nextPage: Key)->Response<Item>,
+    private inline val onRequest:suspend (nextPage: Key)->Result<Item>,
     private inline val getNextKey: suspend (Item)->Key,
     private inline val onError: suspend (Throwable?)->Unit,
     private inline val onSuccess: suspend (item: Item, newKey: Key)->Unit,
@@ -20,15 +20,23 @@ class PaginationFactory<Key, Item> (
         isMakingRequest = true
         onLoadUpdated(true)
         try {
-            val response = onRequest(currentKey)
-            if (response.isSuccessful){
-                isMakingRequest = false
-                val items = response.body()!!
-                currentKey = getNextKey(items)!!
-                onSuccess(items, currentKey)
-                onLoadUpdated(false)
+            val result = onRequest(currentKey)
+
+            when (result) {
+                is Result.Success -> {
+                    isMakingRequest = false
+                    val items = result.data
+                    currentKey = getNextKey(items)!!
+                    onSuccess(items, currentKey)
+                }
+                is Result.Error -> {
+                    isMakingRequest = false
+                    onError(result.exception)
+                }
             }
-        }catch (e:Exception){
+            onLoadUpdated(false)
+        } catch (e: Exception) {
+            isMakingRequest = false
             onError(e)
             onLoadUpdated(false)
         }

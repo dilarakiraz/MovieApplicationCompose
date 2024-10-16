@@ -1,7 +1,7 @@
 package com.example.movieapplicationcompose.domain
 
-import com.example.movieapplicationcompose.models.Details
-import com.example.movieapplicationcompose.models.MoviesList
+import com.example.movieapplicationcompose.data.models.Details
+import com.example.movieapplicationcompose.data.models.MoviesList
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

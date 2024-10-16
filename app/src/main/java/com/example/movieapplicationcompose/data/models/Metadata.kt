@@ -1,4 +1,4 @@
-package com.example.movieapplicationcompose.models
+package com.example.movieapplicationcompose.data.models
 
 data class Metadata(
     val current_page: String,

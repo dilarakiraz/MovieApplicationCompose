@@ -1,5 +1,6 @@
-package com.example.movieapplicationcompose.navigation
+package com.example.movieapplicationcompose.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,10 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
@@ -28,6 +33,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -41,22 +50,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.movieapplicationcompose.R
-import com.example.movieapplicationcompose.models.Details
+import com.example.movieapplicationcompose.data.database.entities.FavoriteMovie
+import com.example.movieapplicationcompose.data.models.Details
 import com.example.movieapplicationcompose.viewModel.MovieViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(navController: NavHostController, id: Int) {
-    val movieViewModel = viewModel<MovieViewModel>()
-    movieViewModel.id = id
-    movieViewModel.getDetailsById()
-    val state = movieViewModel.state
+    val movieViewModel: MovieViewModel = hiltViewModel()
 
+    LaunchedEffect(Unit) {
+        movieViewModel.id = id
+        movieViewModel.getDetailsById()
+    }
+
+    val state = movieViewModel.state
     val details = state.detailsData
+    val isFavorite by remember { mutableStateOf(movieViewModel.isMovieFavorite(id)) }
 
     Scaffold(
         topBar = {
@@ -71,9 +87,30 @@ fun DetailsScreen(navController: NavHostController, id: Int) {
                         Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = Color.Transparent
-                )
+                actions = {
+                    IconButton(onClick = {
+                        if (isFavorite) {
+                            movieViewModel.removeFavoriteMovie(id)
+                        } else {
+                            movieViewModel.addFavoriteMovie(
+                                FavoriteMovie(
+                                    id = details.id,
+                                    title = details.title,
+                                    poster = details.poster,
+                                    plot = details.plot,
+                                    imdbRating = details.imdb_rating
+                                )
+                            )
+                        }
+                    }) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = "Favorite",
+                            tint = if (isFavorite) Color.Red else Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
             )
         },
         content = {
@@ -86,6 +123,7 @@ fun DetailsScreen(navController: NavHostController, id: Int) {
                 Column(
                     Modifier
                         .padding(start = 20.dp, end = 20.dp, bottom = 50.dp)
+                        .verticalScroll(rememberScrollState())
                         .align(Alignment.BottomCenter),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
@@ -149,7 +187,7 @@ fun Rating(details: Details, modifier: Modifier) {
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Icon(imageVector = Icons.Filled.Star, contentDescription = "", tint = Color.White)
         Text(
-            text = details.rated,
+            text = details.imdb_rating,
             modifier.padding(start = 6.dp),
             color = Color.White
         )
