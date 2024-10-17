@@ -76,7 +76,9 @@ class MovieViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = repository.getDetailById(movieId)) {
                 is Result.Success -> {
-                    state = state.copy(detailsData =  result.data)
+                    val currentDetailsList = state.detailsDataList.toMutableList()
+                    currentDetailsList.add(result.data)
+                    state = state.copy(detailsDataList = currentDetailsList)
                 }
                 is Result.Error -> {
                     state = state.copy(error = result.exception.message)
@@ -130,6 +132,8 @@ class MovieViewModel @Inject constructor(
             repository.removeFavoriteMovie(id)
             val updatedFavorites = state.isMovieFavorite.filterNot { it == id }
             state = state.copy(isMovieFavorite = updatedFavorites)
+
+            state.detailsDataList.removeIf { it.id == id }
         }
     }
 
@@ -149,6 +153,7 @@ data class ScreenState(
     val movies: List<Data> = emptyList(),
     val page: Int = 1,
     val detailsData: Details = Details(),
+    var detailsDataList: MutableList<Details> = mutableListOf(),
     val endReached: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,

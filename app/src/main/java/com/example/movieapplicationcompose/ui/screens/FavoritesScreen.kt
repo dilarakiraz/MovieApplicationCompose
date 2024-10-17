@@ -23,20 +23,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -53,38 +49,40 @@ fun FavoritesScreen(navController: NavHostController) {
     }
 
     val favoriteMovies = movieViewModel.state.isMovieFavorite
+    val favoriteMovieDetails = remember { mutableStateListOf<Details>() }
+
+    LaunchedEffect(favoriteMovies) {
+        favoriteMovieDetails.clear()
+
+        favoriteMovies.forEach { movieId ->
+            movieViewModel.getFavoritesById(movieId)
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.LightGray.copy(alpha = 0.1f))
     ) {
+
         TopBar(title = "Favorite Movies")
 
         Spacer(modifier = Modifier.height(5.dp))
-
         LazyColumn {
-            items(favoriteMovies.distinct()) { movieId ->
-                var movieDetails by remember { mutableStateOf<Details?>(null) }
-
-                LaunchedEffect(movieId) {
-                    movieViewModel.getFavoritesById(movieId)
-                }
-
-                movieViewModel.state.detailsData.let { details ->
-                    FavoriteMovieItem(
-                        movie = details,
-                        isFavorite = true,
-                        onFavoriteClick = {
-                            movieViewModel.removeFavoriteMovie(movieId)
-                        },
-                        onMovieClick = {
-                            navController.navigate("Details screen/${details.id}") {
-                                launchSingleTop = true
-                            }
+            items(movieViewModel.state.detailsDataList.distinct()) { movie ->
+                FavoriteMovieItem(
+                    movie = movie,
+                    isFavorite = true,
+                    onFavoriteClick = {
+                        movieViewModel.removeFavoriteMovie(movie.id)
+                        movieViewModel.state.detailsDataList.remove(movie)
+                    },
+                    onMovieClick = {
+                        navController.navigate("Details screen/${movie.id}") {
+                            launchSingleTop = true
                         }
-                    )
-                }
+                    }
+                )
             }
         }
     }
@@ -132,12 +130,12 @@ fun FavoriteMovieItem(
                     color = Color.Black
                 )
                 Text(
-                    text = "Yıl: ${movie.year}",
+                    text = "Year: ${movie.year}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Black
                 )
                 Text(
-                    text = "IMDb Puanı: ${movie.imdb_rating}",
+                    text = "IMDb: ${movie.imdb_rating}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Black
                 )

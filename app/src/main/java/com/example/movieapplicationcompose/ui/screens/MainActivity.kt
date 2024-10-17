@@ -16,7 +16,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.movieapplicationcompose.navigation.Navigation
 import com.example.movieapplicationcompose.ui.theme.MovieApplicationComposeTheme
 import com.example.movieapplicationcompose.viewModel.MovieViewModel

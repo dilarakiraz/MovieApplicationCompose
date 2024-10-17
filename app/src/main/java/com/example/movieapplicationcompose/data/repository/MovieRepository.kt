@@ -51,10 +51,6 @@ class MovieRepository @Inject constructor(
         database.favoriteMovieDao().deleteById(id)
     }
 
-    suspend fun isMovieFavorite(id: Int): Boolean {
-        return database.favoriteMovieDao().isFavorite(id)
-    }
-
     suspend fun getAllFavoriteMovies(): List<FavoriteMovie> {
         return database.favoriteMovieDao().getAllFavorites()
     }
