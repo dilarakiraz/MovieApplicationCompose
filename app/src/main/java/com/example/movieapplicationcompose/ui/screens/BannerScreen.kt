@@ -57,14 +57,14 @@ fun BannerScreen(navController: NavHostController) {
         ) {
             val offset = Offset(10.0f, 10f)
             Text(
-                text = "Enjoy the world of movies",
+                text = "My movies",
                 Modifier.padding(vertical = 25.dp),
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 style = TextStyle(
                     fontSize = 34.sp,
                     shadow = Shadow(
-                        color = Color(0xFFFC5A03),
+                        color = Color(0xFFFC0303),
                         offset = offset, blurRadius = 3f
                     ),
                     fontFamily = FontFamily(Font(R.font.cinzel_decorative)),
@@ -73,10 +73,10 @@ fun BannerScreen(navController: NavHostController) {
             )
             val linearGradientBrush = Brush.linearGradient(
                 colors = listOf(
-                    Color(0xFFB226E1),
-                    Color(0xFFFC6603),
-                    Color(0xFF5995EE),
-                    Color(0xFF3D3535)
+                    Color(0xFF030203),
+                    Color(0xFF341212),
+                    Color(0xFF651616),
+                    Color(0xFF8E0606)
                 ),
                 start = Offset(Float.POSITIVE_INFINITY, 0f),
                 end = Offset(0f, Float.POSITIVE_INFINITY),
@@ -86,7 +86,7 @@ fun BannerScreen(navController: NavHostController) {
                 Modifier
                     .padding(bottom = 55.dp, start = 20.dp, end = 20.dp)
                     .fillMaxWidth()
-                    .background(color = Color.Gray.copy(0.8f), RoundedCornerShape(16.dp))
+                    .background(color = Color.Red.copy(0.8f), RoundedCornerShape(16.dp))
                     .border(
                         BorderStroke(
                             3.dp,
@@ -99,7 +99,7 @@ fun BannerScreen(navController: NavHostController) {
                 )
             ) {
                 Text(
-                    text = "Get In", style = TextStyle(
+                    text = "Let's get started", style = TextStyle(
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,

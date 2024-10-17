@@ -50,6 +50,7 @@ class MovieViewModel @Inject constructor(
 
     init {
         loadNextItems()
+        getAllFavoriteMovies()
     }
 
     fun loadNextItems() {
@@ -71,6 +72,18 @@ class MovieViewModel @Inject constructor(
         }
     }
 
+    fun getFavoritesById(movieId: Int) {
+        viewModelScope.launch {
+            when (val result = repository.getDetailById(movieId)) {
+                is Result.Success -> {
+                    state = state.copy(detailsData =  result.data)
+                }
+                is Result.Error -> {
+                    state = state.copy(error = result.exception.message)
+                }
+            }
+        }
+    }
 
     fun onSearchQueryChange(newQuery: String) {
         query = newQuery
@@ -94,6 +107,7 @@ class MovieViewModel @Inject constructor(
                 is Result.Success -> {
                     state = state.copy(movies = result.data)
                 }
+
                 is Result.Error -> {
                     state = state.copy(error = result.exception.localizedMessage)
                 }
@@ -103,27 +117,30 @@ class MovieViewModel @Inject constructor(
 
     fun addFavoriteMovie(movie: FavoriteMovie) {
         viewModelScope.launch {
-            repository.addFavoriteMovie(movie)
+            if(!isMovieFavorite(movie.id)) {
+                repository.addFavoriteMovie(movie)
+                val updatedFavorites = state.isMovieFavorite + movie.id
+                state = state.copy(isMovieFavorite = updatedFavorites)
+            }
         }
     }
 
     fun removeFavoriteMovie(id: Int) {
         viewModelScope.launch {
             repository.removeFavoriteMovie(id)
+            val updatedFavorites = state.isMovieFavorite.filterNot { it == id }
+            state = state.copy(isMovieFavorite = updatedFavorites)
         }
     }
 
     fun isMovieFavorite(id: Int): Boolean {
-        var isFavorite = false
-        viewModelScope.launch {
-            isFavorite = repository.isMovieFavorite(id)
-        }
-        return isFavorite
+        return state.isMovieFavorite.contains(id)
     }
 
     fun getAllFavoriteMovies() {
         viewModelScope.launch {
             val favoriteMovies = repository.getAllFavoriteMovies()
+            state = state.copy(isMovieFavorite = favoriteMovies.map { it.id })
         }
     }
 }
@@ -134,5 +151,6 @@ data class ScreenState(
     val detailsData: Details = Details(),
     val endReached: Boolean = false,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val isMovieFavorite: List<Int> = emptyList()
 )

@@ -2,13 +2,14 @@ package com.example.movieapplicationcompose.data.database
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.movieapplicationcompose.data.database.entities.FavoriteMovie
 
 @Dao
 interface FavoriteMovieDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(favoriteMovie: FavoriteMovie)
 
     @Query("SELECT * FROM favorite_movies")

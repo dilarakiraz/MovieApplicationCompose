@@ -38,10 +38,10 @@ class MainActivity : ComponentActivity() {
                 )
                 val linearGradientBrush = Brush.linearGradient(
                     colors = listOf(
-                        Color(0xFFB226E1),
-                        Color(0xFFFC6603),
-                        Color(0xFF5995EE),
-                        Color(0xFF3D3535)
+                        Color(0xFF030203),
+                        Color(0xFF341212),
+                        Color(0xFF651616),
+                        Color(0xFF8E0606)
                     ),
                     start = Offset(Float.POSITIVE_INFINITY, 0f),
                     end = Offset(0f, Float.POSITIVE_INFINITY),

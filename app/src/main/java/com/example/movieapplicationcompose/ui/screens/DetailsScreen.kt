@@ -34,9 +34,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -51,7 +48,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.movieapplicationcompose.R
@@ -68,11 +64,12 @@ fun DetailsScreen(navController: NavHostController, id: Int) {
     LaunchedEffect(Unit) {
         movieViewModel.id = id
         movieViewModel.getDetailsById()
+        movieViewModel.isMovieFavorite(id)
     }
 
     val state = movieViewModel.state
     val details = state.detailsData
-    val isFavorite by remember { mutableStateOf(movieViewModel.isMovieFavorite(id)) }
+    val isFavorite = movieViewModel.state.isMovieFavorite.contains(id)
 
     Scaffold(
         topBar = {
@@ -80,9 +77,7 @@ fun DetailsScreen(navController: NavHostController, id: Int) {
                 title = { Text(text = details.title, color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate("Home screen") {
-                            popUpTo("Home screen") { inclusive = true }
-                        }
+                        navController.popBackStack()
                     }) {
                         Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }

@@ -40,7 +40,11 @@ class MovieRepository @Inject constructor(
     }
 
     suspend fun addFavoriteMovie(movie: FavoriteMovie) {
-        database.favoriteMovieDao().insert(movie)
+        val isFavorite = database.favoriteMovieDao().isFavorite(movie.id)
+        if (!isFavorite) {
+            database.favoriteMovieDao().insert(movie)
+        } else {
+        }
     }
 
     suspend fun removeFavoriteMovie(id: Int) {

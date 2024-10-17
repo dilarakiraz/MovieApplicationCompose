@@ -130,7 +130,9 @@ fun ItemUi(itemIndex: Int, movieList: List<Data>, navController: NavHostControll
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = true, color = Color.Yellow)
             ){
-                navController.navigate("Details screen/${movieList[itemIndex].id}")
+                navController.navigate("Details screen/${movieList[itemIndex].id}") {
+                    launchSingleTop = true
+                }
             },
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
