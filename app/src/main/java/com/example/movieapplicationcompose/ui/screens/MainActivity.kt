@@ -28,14 +28,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+
         setContent {
             MovieApplicationComposeTheme {
-                WindowCompat.setDecorFitsSystemWindows(window, false)
-                window.setFlags(
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                )
-                val linearGradientBrush = Brush.linearGradient(
+                val backgroundBrush = Brush.linearGradient(
                     colors = listOf(
                         Color(0xFF030203),
                         Color(0xFF341212),
@@ -45,14 +47,15 @@ class MainActivity : ComponentActivity() {
                     start = Offset(Float.POSITIVE_INFINITY, 0f),
                     end = Offset(0f, Float.POSITIVE_INFINITY),
                 )
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val state = movieViewModel.state
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .background(linearGradientBrush)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(backgroundBrush)
                     ) {
                         Navigation()
                     }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,8 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,17 +31,24 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.movieapplicationcompose.R
 import com.example.movieapplicationcompose.data.models.Details
 import com.example.movieapplicationcompose.viewModel.MovieViewModel
+import com.example.movieapplicationcompose.viewModel.SortOrder
 
 @Composable
 fun FavoritesScreen(navController: NavHostController) {
@@ -50,6 +60,8 @@ fun FavoritesScreen(navController: NavHostController) {
 
     val favoriteMovies = movieViewModel.state.isMovieFavorite
     val favoriteMovieDetails = remember { mutableStateListOf<Details>() }
+    var expanded by remember { mutableStateOf(false) }
+    var sortOrder by remember { mutableStateOf(SortOrder.DEFAULT) }
 
     LaunchedEffect(favoriteMovies) {
         favoriteMovieDetails.clear()
@@ -59,15 +71,46 @@ fun FavoritesScreen(navController: NavHostController) {
         }
     }
 
+    LaunchedEffect(sortOrder) {
+        movieViewModel.sortMovies(sortOrder)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.LightGray.copy(alpha = 0.1f))
     ) {
 
-        TopBar(title = "Favorite Movies")
+        TopBar(
+            title = "Favorite Movies",
+            actions = {
+                IconButton(onClick = { expanded = true }) {
+                    FilterIcon()
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            sortOrder = SortOrder.A_TO_Z
+                            expanded = false
+                        },
+                        text = { Text("A to Z") }
+                    )
+                    DropdownMenuItem(
+                        onClick = {
+                            sortOrder = SortOrder.Z_TO_A
+                            expanded = false
+                        },
+                        text = { Text("Z to A") }
+                    )
+                }
+            }
+        )
 
         Spacer(modifier = Modifier.height(5.dp))
+
         LazyColumn {
             items(movieViewModel.state.detailsDataList.distinct()) { movie ->
                 FavoriteMovieItem(
@@ -153,11 +196,26 @@ fun FavoriteMovieItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(title: String) {
+fun TopBar(title: String, actions: @Composable RowScope.() -> Unit = {}) {
     TopAppBar(
         title = { Text(text = title) },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.White.copy(.4f)
-        )
+        ),
+        actions = actions
     )
+}
+
+@Composable
+fun FilterIcon() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.filter),
+            contentDescription = "Filter",
+            modifier = Modifier.size(24.dp)
+        )
+        Text(text = "Filter", style = MaterialTheme.typography.bodySmall)
+    }
 }

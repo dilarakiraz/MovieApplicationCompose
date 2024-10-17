@@ -7,43 +7,40 @@ import com.example.movieapplicationcompose.data.models.Details
 import com.example.movieapplicationcompose.domain.ApiInterface
 import javax.inject.Inject
 import com.example.movieapplicationcompose.utils.Result
+import retrofit2.Response
 
 class MovieRepository @Inject constructor(
     private val database: MovieDatabase,
     private val api: ApiInterface
 ) {
 
-    suspend fun getMovieList(page: Int): Result<List<Data>> {
+    private inline fun <T> handleApiCall(call: () -> Response<T>): Result<T> {
         return try {
-            val response = api.getMovies(page)
+            val response = call()
             if (response.isSuccessful && response.body() != null) {
-                Result.Success(response.body()!!.data)
+                Result.Success(response.body()!!)
             } else {
-                Result.Error(Exception("API Error: ${response.code()}"))
+                Result.Error(Exception("API Error: ${response.code()} - ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.Error(e)
+        }
+    }
+
+    suspend fun getMovieList(page: Int): Result<List<Data>> {
+        return when (val result = handleApiCall { api.getMovies(page) }) {
+            is Result.Success -> { Result.Success(result.data.data) }
+            is Result.Error -> { Result.Error(result.exception) }
         }
     }
 
     suspend fun getDetailById(id: Int): Result<Details> {
-        return try {
-            val response = api.getDetailsById(id)
-            if (response.isSuccessful && response.body() != null) {
-                Result.Success(response.body()!!)
-            } else {
-                Result.Error(Exception("API Error: ${response.code()}"))
-            }
-        } catch (e: Exception) {
-            Result.Error(e)
-        }
+        return handleApiCall { api.getDetailsById(id) }
     }
 
     suspend fun addFavoriteMovie(movie: FavoriteMovie) {
-        val isFavorite = database.favoriteMovieDao().isFavorite(movie.id)
-        if (!isFavorite) {
+        if (!isMovieFavorite(movie.id)) {
             database.favoriteMovieDao().insert(movie)
-        } else {
         }
     }
 
@@ -53,5 +50,9 @@ class MovieRepository @Inject constructor(
 
     suspend fun getAllFavoriteMovies(): List<FavoriteMovie> {
         return database.favoriteMovieDao().getAllFavorites()
+    }
+
+    private suspend fun isMovieFavorite(id: Int): Boolean {
+        return database.favoriteMovieDao().isFavorite(id)
     }
 }

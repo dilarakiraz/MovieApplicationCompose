@@ -1,14 +1,13 @@
 package com.example.movieapplicationcompose.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,7 +21,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -56,6 +54,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.movieapplicationcompose.data.models.Data
 import com.example.movieapplicationcompose.viewModel.MovieViewModel
+import com.example.movieapplicationcompose.viewModel.ScreenState
 
 
 @Composable
@@ -65,53 +64,25 @@ fun HomeScreen(navController: NavHostController) {
     var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
-        modifier = Modifier
-            .background(Color.Transparent),
         topBar = {
             Column {
                 TopBar()
                 SearchBar(
                     query = searchQuery,
-                    onQueryChange = { newQuery ->
-                        searchQuery = newQuery
-                        movieViewModel.onSearchQueryChange(newQuery)
+                    onQueryChange = {
+                        searchQuery = it
+                        movieViewModel.onSearchQueryChange(it)
                     },
                     navController = navController
                 )
             }
-        }, content = { paddingValues ->
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .background(Color.Transparent),
-                content = {
-                    items(state.movies.size) {
-                        if (it >= state.movies.size - 1 && !state.endReached && !state.isLoading) {
-                            movieViewModel.loadNextItems()
-                        }
-
-                        ItemUi(
-                            itemIndex = it,
-                            movieList = state.movies,
-                            navController = navController
-                        )
-                    }
-                    item(state.isLoading) {
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            CircularProgressIndicator(color = ProgressIndicatorDefaults.circularColor)
-                        }
-                        if (!state.error.isNullOrEmpty()){
-                            Toast.makeText(LocalContext.current, state.error, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
+        },
+        content = { paddingValues ->
+            MovieGrid(
+                state = state,
+                onLoadNextItems = { movieViewModel.loadNextItems() },
+                navController = navController,
+                paddingValues = paddingValues
             )
         },
         containerColor = Color.Transparent
@@ -120,92 +91,139 @@ fun HomeScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ItemUi(itemIndex: Int, movieList: List<Data>, navController: NavHostController) {
+fun MovieGrid(
+    state: ScreenState,
+    onLoadNextItems: () -> Unit,
+    navController: NavHostController,
+    paddingValues: PaddingValues
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize()
+            .background(Color.Transparent),
+        content = {
+            items(state.movies.size) { index ->
+                if (index >= state.movies.size - 1 && !state.endReached && !state.isLoading) {
+                    onLoadNextItems()
+                }
+
+                MovieItem(
+                    movie = state.movies[index],
+                    navController = navController
+                )
+            }
+
+            if (state.isLoading) {
+                item {
+                    LoadingIndicator()
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun MovieItem(movie: Data, navController: NavHostController) {
     Card(
-        Modifier
+        modifier = Modifier
             .wrapContentSize()
             .padding(10.dp)
-            .clickable (
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = true, color = Color.Yellow)
-            ){
-                navController.navigate("Details screen/${movieList[itemIndex].id}") {
+            .clickable {
+                navController.navigate("Details screen/${movie.id}") {
                     launchSingleTop = true
                 }
             },
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
             AsyncImage(
-                model = movieList[itemIndex].poster,
-                contentDescription = movieList[itemIndex].title,
+                model = movie.poster,
+                contentDescription = movie.title,
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Crop
             )
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .background(Color.LightGray.copy(.7f))
-                    .padding(6.dp)
-            ) {
-                //Film başlığı
-                Text(
-                    text = movieList[itemIndex].title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .basicMarquee(),
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    style = TextStyle(
-                        shadow = Shadow(
-                            Color(0xFFFC6603), offset = Offset(1f, 1f), 3f
-                        )
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                // IMDb Puanı ve Yıldızlar
-                Row(Modifier.align(Alignment.End)) {
-                    Icon(imageVector = Icons.Rounded.Star, contentDescription = "")
 
-                    Text(
-                        text = movieList[itemIndex].imdb_rating,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 8.dp),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        maxLines = 2
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Türler (Genres)
-                Text(
-                    text = movieList[itemIndex].genres.joinToString(", "),
-                    color = Color.Black,
-                    fontSize = 12.sp,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Ülke ve Yıl
-                Text(
-                    text = "${movieList[itemIndex].country} - ${movieList[itemIndex].year}",
-                    color = Color.Black,
-                    fontSize = 12.sp,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            }
+            MovieInfo(movie)
         }
+    }
+}
+
+@Composable
+fun MovieInfo(movie: Data) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(Color.LightGray.copy(.7f))
+            .padding(6.dp)
+    ) {
+        Text(
+            text = movie.title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .basicMarquee(),
+            textAlign = TextAlign.Center,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            style = TextStyle(
+                shadow = Shadow(Color(0xFFFC6603), offset = Offset(1f, 1f), 3f)
+            )
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(Modifier.align(Alignment.End)) {
+            Icon(imageVector = Icons.Rounded.Star, contentDescription = "")
+            Text(
+                text = movie.imdb_rating,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp),
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                maxLines = 2
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = movie.genres.joinToString(", "),
+            color = Color.Black,
+            fontSize = 12.sp,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = "${movie.country} - ${movie.year}",
+            color = Color.Black,
+            fontSize = 12.sp,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun LoadingIndicator() {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(color = ProgressIndicatorDefaults.circularColor)
     }
 }
 
@@ -214,9 +232,7 @@ fun ItemUi(itemIndex: Int, movieList: List<Data>, navController: NavHostControll
 fun TopBar() {
     TopAppBar(
         title = { Text(text = "Movie App") },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White.copy(.4f)
-        )
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White.copy(.4f))
     )
 }
 

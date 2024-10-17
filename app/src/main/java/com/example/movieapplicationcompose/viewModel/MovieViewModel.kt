@@ -65,6 +65,7 @@ class MovieViewModel @Inject constructor(
                 is Result.Success -> {
                     state = state.copy(detailsData = result.data)
                 }
+
                 is Result.Error -> {
                     state = state.copy(error = result.exception.message)
                 }
@@ -80,6 +81,7 @@ class MovieViewModel @Inject constructor(
                     currentDetailsList.add(result.data)
                     state = state.copy(detailsDataList = currentDetailsList)
                 }
+
                 is Result.Error -> {
                     state = state.copy(error = result.exception.message)
                 }
@@ -119,7 +121,7 @@ class MovieViewModel @Inject constructor(
 
     fun addFavoriteMovie(movie: FavoriteMovie) {
         viewModelScope.launch {
-            if(!isMovieFavorite(movie.id)) {
+            if (!isMovieFavorite(movie.id)) {
                 repository.addFavoriteMovie(movie)
                 val updatedFavorites = state.isMovieFavorite + movie.id
                 state = state.copy(isMovieFavorite = updatedFavorites)
@@ -147,6 +149,16 @@ class MovieViewModel @Inject constructor(
             state = state.copy(isMovieFavorite = favoriteMovies.map { it.id })
         }
     }
+
+    fun sortMovies(order: SortOrder) {
+        val sortedList = when (order) {
+            SortOrder.A_TO_Z -> state.detailsDataList.sortedBy { it.title }
+            SortOrder.Z_TO_A -> state.detailsDataList.sortedByDescending { it.title }
+            else -> state.detailsDataList
+        }.toMutableList()
+
+        state = state.copy(detailsDataList = sortedList)
+    }
 }
 
 data class ScreenState(
@@ -155,7 +167,14 @@ data class ScreenState(
     val detailsData: Details = Details(),
     var detailsDataList: MutableList<Details> = mutableListOf(),
     val endReached: Boolean = false,
+    var sortOrder: SortOrder = SortOrder.A_TO_Z,
     val isLoading: Boolean = false,
     val error: String? = null,
     val isMovieFavorite: List<Int> = emptyList()
 )
+
+enum class SortOrder {
+    DEFAULT,
+    A_TO_Z,
+    Z_TO_A
+}
