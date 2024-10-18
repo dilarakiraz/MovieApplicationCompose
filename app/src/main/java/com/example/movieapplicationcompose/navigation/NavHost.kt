@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.movieapplicationcompose.navigation.bottom.BottomNavBar
 import com.example.movieapplicationcompose.ui.screens.BannerScreen
+import com.example.movieapplicationcompose.ui.screens.ChatScreen
 import com.example.movieapplicationcompose.ui.screens.DetailsScreen
 import com.example.movieapplicationcompose.ui.screens.FavoritesScreen
 import com.example.movieapplicationcompose.ui.screens.HomeScreen
@@ -28,6 +29,7 @@ fun Navigation() {
     val detailsScreen = "Details screen/{id}"
     val homeScreen = "Home screen"
     val favoritesScreen = "Favorites screen"
+    val chatScreen = "Chat screen"
 
     val bottomNavVisible = currentRoute != "Banner screen" && currentRoute != "Details screen/{id}"
 
@@ -45,6 +47,9 @@ fun Navigation() {
             }
             composable(favoritesScreen) {
                 FavoritesScreen(navController = navController)
+            }
+            composable(chatScreen) {
+                ChatScreen(navController = navController)
             }
             composable(
                 detailsScreen,

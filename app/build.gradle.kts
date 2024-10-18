@@ -95,4 +95,6 @@ dependencies {
     implementation ("androidx.work:work-runtime-ktx:2.9.1")
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
 }
