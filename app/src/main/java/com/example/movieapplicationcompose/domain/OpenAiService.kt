@@ -8,7 +8,7 @@ import retrofit2.http.POST
 
 interface OpenAiService {
     @Headers("Content-Type: application/json")
-    @POST("v1/completions")
+    @POST("v1/chat/completions")
     suspend fun getChatCompletion(
         @Body request: ChatRequest
     ): ChatResponse

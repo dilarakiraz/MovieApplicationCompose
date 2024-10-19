@@ -31,23 +31,37 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit {
+    @MovieRetrofit
+    fun provideMovieRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(Util.Base)
+            .baseUrl(Util.BaseMovie)
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideApiInterface(retrofit: Retrofit): ApiInterface {
-        return retrofit.create(ApiInterface::class.java)
+    @ApiRetrofit
+    fun provideOpenAiRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(Util.BaseAl)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
 
     @Provides
     @Singleton
-    fun provideOpenAiService(retrofit: Retrofit): OpenAiService {
+    fun provideApiInterface(@MovieRetrofit movieRetrofit: Retrofit): ApiInterface {
+        return movieRetrofit.create(ApiInterface::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOpenAiService(@ApiRetrofit retrofit: Retrofit): OpenAiService {
         return retrofit.create(OpenAiService::class.java)
     }
 }
+
 //   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
