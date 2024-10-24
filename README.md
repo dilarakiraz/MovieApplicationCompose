@@ -1,12 +1,14 @@
-## Movie App Compose 📒
+## Movie App Compose 
 This app is an Android app built using Android Native Library Jetpack Compose and Material 3 design guidelines. 
 The app follows Google recommended best practices and architecture.
 
 ## Screenshot
 
-|![splash](https://github.com/user-attachments/assets/b3fd68ff-10ee-473d-b82a-90160254711b)|![main](https://github.com/user-attachments/assets/82099f42-dc04-4849-9e73-96d35ed0c5b1)|![edit](https://github.com/user-attachments/assets/077a3045-731b-4c7d-94d2-77f37c1f6d44)|![delete](https://github.com/user-attachments/assets/77c0cfad-7c63-4863-aaa8-91cb23973f33)|
-|----|----|----|----|
-|![color](https://github.com/user-attachments/assets/49433124-36b2-462a-854f-5d8d0f22caeb)|![ascending](https://github.com/user-attachments/assets/02488edd-e288-40a0-a448-94a17a1d251e)|![add](https://github.com/user-attachments/assets/9c4d8fe4-18aa-4320-b397-0e6e75e9fb1d)|
+| **Main Screen** | **Detail Screen** | **Add to Favorites** |
+|----|----|----|
+| ![main](https://github.com/user-attachments/assets/2d1e7388-164f-4be3-bc3d-d4e9bd3909b1) | ![detail](https://github.com/user-attachments/assets/67c78169-3c86-4f11-aa23-38c4b4f4ee05) | ![addFav](https://github.com/user-attachments/assets/d14bd2f0-decc-48db-9f8d-62be4b7d1e64) |
+| **Favorites Screen** | **Filter Screen** | **Search Screen** |
+| ![favScreen](https://github.com/user-attachments/assets/99975cfa-ecab-46c1-8f86-70848eebfe73) | ![filterScreen](https://github.com/user-attachments/assets/d729b509-9c52-4752-a9e3-df93ee7a628c) | ![search](https://github.com/user-attachments/assets/cef1da6b-17a0-46bd-b246-0af6cade86bf) |
 
 ## Tech Stack & Open Source Libraries
 - Minimum SDK level 21
@@ -28,4 +30,4 @@ The app follows Google recommended best practices and architecture.
 ## Architecture
 MVVM [***Model View ViewModel***](https://developer.android.com/topic/architecture#recommended-app-arch)
 
-![Architecture](https://user-images.githubusercontent.com/21035435/69536839-9f4c8e80-0fa0-11ea-85ee-d7823e5a46b0.png)
+![mvvm](https://github.com/user-attachments/assets/2dda4618-5d80-48db-8fcf-0a9546792aff)
