@@ -19,7 +19,6 @@ fun BottomNavBar(navController: NavHostController) {
     val topLevelRoutes = listOf(
         BottomNavItem.Home,
         BottomNavItem.Favorites,
-        BottomNavItem.Chat
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()

@@ -15,7 +15,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.movieapplicationcompose.navigation.bottom.BottomNavBar
 import com.example.movieapplicationcompose.ui.screens.BannerScreen
-import com.example.movieapplicationcompose.ui.screens.ChatScreen
 import com.example.movieapplicationcompose.ui.screens.DetailsScreen
 import com.example.movieapplicationcompose.ui.screens.FavoritesScreen
 import com.example.movieapplicationcompose.ui.screens.HomeScreen
@@ -47,9 +46,6 @@ fun Navigation() {
             }
             composable(favoritesScreen) {
                 FavoritesScreen(navController = navController)
-            }
-            composable(chatScreen) {
-                ChatScreen(navController = navController)
             }
             composable(
                 detailsScreen,
