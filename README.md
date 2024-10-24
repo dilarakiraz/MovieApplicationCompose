@@ -12,7 +12,7 @@ The app follows Google recommended best practices and architecture.
 
 ## Tech Stack & Open Source Libraries
 - Minimum SDK level 21
-- 100% [Kotlin](https://kotlinlang.org/)  based + [Flow](https://developer.android.com/kotlin/flow) and [Coroutines](https://developer.android.com/kotlin/coroutines)
+- 100% [Kotlin](https://kotlinlang.org/) and [Coroutines](https://developer.android.com/kotlin/coroutines)
 - [Architecture Components](https://developer.android.com/topic/libraries/architecture)
   - [Repository](https://developer.android.com/topic/architecture/data-layer) pattern is a design pattern that isolates the data layer from the rest of the app
   - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) class is a business logic or screen level state holder. It exposes the state to the UI and encapsulates related business logic
