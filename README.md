@@ -4,15 +4,17 @@ The app follows Google recommended best practices and architecture.
 
 ## Screenshot
 
-| **Main Screen** | **Detail Screen** | **Add to Favorites** |
-|----|----|----|
-| ![main](https://github.com/user-attachments/assets/2d1e7388-164f-4be3-bc3d-d4e9bd3909b1) | ![detail](https://github.com/user-attachments/assets/67c78169-3c86-4f11-aa23-38c4b4f4ee05) | ![addFav](https://github.com/user-attachments/assets/d14bd2f0-decc-48db-9f8d-62be4b7d1e64) |
-| **Favorites Screen** | **Filter Screen** | **Search Screen** |
-| ![favScreen](https://github.com/user-attachments/assets/99975cfa-ecab-46c1-8f86-70848eebfe73) | ![filterScreen](https://github.com/user-attachments/assets/d729b509-9c52-4752-a9e3-df93ee7a628c) | ![search](https://github.com/user-attachments/assets/cef1da6b-17a0-46bd-b246-0af6cade86bf) |
+| **Main Screen**      | **Detail Screen**       | **Add to Favorites**   | **Banner**            |
+|----------------------|-------------------------|------------------------|-----------------------|
+| ![home](https://github.com/user-attachments/assets/d2bb8837-c64d-49f9-9a70-19124050c367) | ![detail](https://github.com/user-attachments/assets/67c78169-3c86-4f11-aa23-38c4b4f4ee05) | ![addFav](https://github.com/user-attachments/assets/d14bd2f0-decc-48db-9f8d-62be4b7d1e64) | ![banner](https://github.com/user-attachments/assets/83d8483d-7ab0-45c4-86ef-884bcc52a3fb) |
+
+| **Favorites Screen**  | **Filter Screen**       | **Search Screen**      | **AL Screen**         |
+|-----------------------|-------------------------|------------------------|-----------------------|
+| ![favScreen](https://github.com/user-attachments/assets/eb8a6437-d985-4be4-b343-faa715acf880) | ![filter](https://github.com/user-attachments/assets/7a6c0014-f783-4ec4-829f-fdbf2c56106c) | ![search](https://github.com/user-attachments/assets/702ecdc5-0dff-4076-8239-0bf4d7da31b7) | ![alScreen](https://github.com/user-attachments/assets/324b696e-eab3-4dfc-8b91-fa1b8b8f7c4b) |
 
 ## Tech Stack & Open Source Libraries
 - Minimum SDK level 21
-- 100% [Kotlin](https://kotlinlang.org/) and [Coroutines](https://developer.android.com/kotlin/coroutines)
+- 100% Kotlin based + Flow and Coroutines
 - [Architecture Components](https://developer.android.com/topic/libraries/architecture)
   - [Repository](https://developer.android.com/topic/architecture/data-layer) pattern is a design pattern that isolates the data layer from the rest of the app
   - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) class is a business logic or screen level state holder. It exposes the state to the UI and encapsulates related business logic
